@@ -4,6 +4,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.Clip;
 
+
+/*
+/ The Sound class handles sounds 
+ */
 public class Sounds {
 
     Clip eat;
@@ -18,7 +22,7 @@ public class Sounds {
     Clip lostSounds[] = new Clip[8];
 
     Sounds(Class game) {
-        
+
         eat = Engine.createClip("Eat.wav", game);
         snake1 = Engine.createClip("snake1.wav", game);
         snake2 = Engine.createClip("snake2.wav", game);
@@ -39,17 +43,14 @@ public class Sounds {
         lostSounds[7] = snake8;
 
     }
-    
+
     void resetLost() {
-     Engine.resetClip(lostSounds);
-    
-    
+        Engine.resetClip(lostSounds);
+
     }
-    void restartEat()
-    {Engine.restartClip(eat);}
+
+    void restartEat() {
+        Engine.restartClip(eat);
+    }
 
 }
-
-
-
-

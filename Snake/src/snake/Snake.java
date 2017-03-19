@@ -2,11 +2,19 @@ package snake;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/*
+/ The Snake class is responsible for the core gameplay
+/ It holds methods and parameters
+/ for the snake, fruit score etc.
+ */
 public class Snake {
+
+    Game game;
+    
     final int INITIAL_POSITION = 455; //0-899
     final int CELL_WIDTH = 18;
     final int CELL_HEIGHT = 18;
@@ -16,33 +24,33 @@ public class Snake {
     int fruitPos;
     volatile int dir; // left up right down
     volatile int lastDir;
-    
+
     int x;
     int y;
     int tailX;
     int tailY;
     int tailPiece;
     int prevTailPiece;
-    
+
     volatile int score;
-    
+
     int addTail;
 
-    
-    Snake() {
-    initSnake();
-    
-    
+    Snake(Game game) {
+        this.game = game;
+        initSnake();
+        
     }
+
     final void initSnake() {
         body.clear();
         lastTail.clear();
         dir = 0; // left up right down
         body.add(INITIAL_POSITION); // 0 - 899
-      
+
         addTail = 0;
         score = 0;
-        
+
         lastDir = 0;
 
     }
@@ -54,44 +62,42 @@ public class Snake {
                 || (lastTail.get(0) % 30 == 29 && lastTail.get(0) == body.get(0) - 1)
                 || (lastTail.get(0) / 30 == 0 && lastTail.get(0) == body.get(0) + 30)
                 || (lastTail.get(0) / 30 == 29 && lastTail.get(0) == body.get(0) - 30)
-                || (body.lastIndexOf(body.get(0))>0); 
+                || (body.lastIndexOf(body.get(0)) > 0);
 
     }
-    
-    
-      void paintFruit(Graphics2D g2){
-       g2.setColor(Color.WHITE);
+
+    void paintFruit(Graphics2D g2) {
+        g2.setColor(Color.WHITE);
         if (fruitPos >= 0) {
-            g2.fillOval((fruitPos % 30) * 20 + 3, (fruitPos / 30) * 20 + 3, 14, 14);
+            g2.fillOval((fruitPos % 30) * 20 + 3, (fruitPos / 30) * 20 + 3 + GUI.FOR_SCORE , 14, 14);
         }
-    
+
     }
-    
-    
-      void paintSnake(Graphics2D g2){
-    
-          System.out.println(body.get(0));
+
+    void paintSnake(Graphics2D g2) {
+
+        System.out.println(body.get(0));
         /*snake
          g2.setColor(Color.WHITE);
         x = (body.get(0) % 30) * 20;
         y = (body.get(0) / 30) * 20;
         g2.fillRect(x + 1, y + 1, 18, 18);*/
         // arrow
-        
-         for (int i = 0; i < body.size(); i++) {
-         //body
+
+        for (int i = 0; i < body.size(); i++) {
+            //body
             g2.setColor(Color.WHITE);
             tailX = body.get(i) % 30 * 20;
-            tailY = body.get(i) / 30 * 20;
-            
-            g2.fillRect(tailX + CELL_OFFSET, tailY + CELL_OFFSET, CELL_WIDTH,  CELL_HEIGHT);
-            
-            }
+            tailY = body.get(i) / 30 * 20 + GUI.FOR_SCORE;
+
+            g2.fillRect(tailX + CELL_OFFSET, tailY + CELL_OFFSET , CELL_WIDTH, CELL_HEIGHT);
+
+        }
         //arrow
-         x = body.get(0) % 30 * 20;
-         y = body.get(0) / 30 * 20;
+        x = body.get(0) % 30 * 20;
+        y = body.get(0) / 30 * 20 + GUI.FOR_SCORE;
         g2.setColor(Color.BLACK);
-        
+
         switch (dir) {
             case 0:
                 g2.fillPolygon(new int[]{x + 6, x + 2, x + 6}, new int[]{y + 6, y + 10, y + 14}, 3);
@@ -105,10 +111,10 @@ public class Snake {
             case 3:
                 g2.fillPolygon(new int[]{x + 6, x + 10, x + 14}, new int[]{y + 14, y + 18, y + 14}, 3);
                 break;
-        }  
-      // tail
-       
-            /* lines
+        }
+        // tail
+
+        /* lines
             g2.setColor(Color.BLACK);
             if (i > 0 && i < body.size() - 1) {
                 if (body.get(i - 1) == body.get(i) - 1 || body.get(i + 1) == body.get(i) - 1) {
@@ -162,12 +168,6 @@ public class Snake {
             }
 
         }*/
-    
-    
-    
     }
-    
-    
-    
-    
+
 }
