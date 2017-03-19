@@ -1,13 +1,14 @@
 package snake;
 
-import java.awt.event.KeyListener;
 import java.util.Random;
-import javax.sound.sampled.Clip;
-
 import javax.swing.JFrame;
 
+/*
+/ The Game class holds all others
+/ It is responsible for game state (main loop, fps count, FRUIT generation (this one might be moved to Snake) )
+ */
 public class Game {
-// IDEAS 1: snake snaake snaaaaaaake 2: while(true) if (running) cheta skachet 3: 2 raza render ne vizivai, poprobui sdelat 180* razvorot, SNAKE writing in menu with snake blocks *** shit turnz, delay too low
+// SNAKE writing in menu with snake blocks 
 
     JFrame frame;
     Snake snake;
@@ -15,30 +16,26 @@ public class Game {
     Sounds sounds;
     Random rand = new Random(); //move
     Random loseRand = new Random();//move SOUND
- 
-    
 
     volatile boolean pressed;
     volatile boolean call;
     volatile boolean afterCall;
-    volatile int gameState; // menu 0 canStart 1 running 2 lost 3 won 4 leaderboard 5
+
+    enum State {
+        MENU, CANSTART, RUNNING, LOST, WON, LEADERBOARD
+    }
+    volatile State gameState; // menu 0 canStart 1 running 2 lost 3 won 4 leaderboard 5
 
     double lastTime;  // Timer
     double timeNow;
     double dtime;
-    final double step = 1000 / 12;
-
-  
-   
+    final double step = 1000 / 15;
 
     public Game() {
-        snake = new Snake();
+        snake = new Snake(this);
         graphics = new GUI(this);
         sounds = new Sounds(Game.class);
-        
-        
-        
-       
+
     }
 
     void initGame() {
@@ -51,13 +48,13 @@ public class Game {
 
         setFruit();
         snake.initSnake();
-        
+
         sounds.resetLost();
-        
+
         graphics.frame.setTitle("Snake v0.5" + "    " + "Score:" + snake.score + "    Made by Giorgi Shavoshvili");
-        gameState = 1;
+        gameState = State.CANSTART;
         graphics.frame.repaint();
-        
+
     }
 
     void setFruit() {
@@ -71,15 +68,8 @@ public class Game {
 
     }
 
-    
-
-    
-            
-
-    
-
     synchronized void run() {
-     
+
         graphics.addKeyboard();
         int ups = 0;
         int dups = 0;
@@ -87,25 +77,28 @@ public class Game {
             timeNow = System.currentTimeMillis();
             dups += timeNow - lastTime;
             if (dups >= 1000) {
+                graphics.frame.setTitle("Snake v0.5" + "    " + "Score:" + snake.score + "FPS:" + String.valueOf(ups) + "Made by Giorgi Shavoshvili");
                 ups = 0;
                 dups = 0;
             }
-            if (gameState == 2) {
+            if (gameState == State.RUNNING) {
                 dtime += timeNow - lastTime;
 
-                if (dtime >= step || call) {
+                if (dtime >= step || call || (afterCall && dtime >= step / 2)) {
 
                     update();
                     render();
                     ups++;
                     if (call) {
-                        dtime = 0;
+
                         call = false;
+                        dtime = 0;
                         afterCall = true;
+                    } else if (afterCall) {
+
+                        dtime = 0;
+                        afterCall = false;
                     } else {
-                        if (afterCall) {
-                            afterCall = false;
-                        }
                         dtime -= step;
                     }
 
@@ -119,37 +112,31 @@ public class Game {
     }
 
     void update() {
-        
-            snake.lastTail.clear();
-            snake.lastTail.addAll(snake.body);
 
-        
-     
+        snake.lastTail.clear();
+        snake.lastTail.addAll(snake.body);
+
         switch (call ? snake.lastDir : snake.dir) {
             case 0:
-                snake.body.set(0, snake.body.get(0)-1);
-              
+                snake.body.set(0, snake.body.get(0) - 1);
 
                 break;
             case 1:
-                snake.body.set(0, snake.body.get(0)-30);
-               
+                snake.body.set(0, snake.body.get(0) - 30);
 
                 break;
             case 2:
-                snake.body.set(0, snake.body.get(0)+1);
-               
+                snake.body.set(0, snake.body.get(0) + 1);
 
                 break;
             case 3:
-                snake.body.set(0, snake.body.get(0)+30);
-                
+                snake.body.set(0, snake.body.get(0) + 30);
 
                 break;
         }
 
         if (snake.body.get(0) == snake.fruitPos) {
-            System.out.println(sounds.eat.getFramePosition());
+
             sounds.restartEat();
 
             snake.addTail += snake.FRUIT_VALUE;
@@ -157,11 +144,11 @@ public class Game {
             graphics.frame.setTitle("Snake v0.5" + "    " + "Score:" + snake.score + "    Made by Giorgi Shavoshvili");
             setFruit();
         } else if (snake.checkLose()) {
-            
+
             snake.body.set(0, snake.lastTail.get(0));
             System.out.println("lost");
             sounds.lostSounds[loseRand.nextInt(8)].start();
-            gameState = 3;
+            gameState = State.LOST;
             if (call) {
                 snake.dir = snake.lastDir;
             }
@@ -169,14 +156,12 @@ public class Game {
         }
 
         // tut
-
         if (snake.addTail > 0) {
             snake.body.add(1, snake.lastTail.get(0));
 
             snake.addTail--;
 
         } else if (snake.body.size() > 0) {
-            
 
             for (int i = snake.body.size() - 1; i > 0; i--) {
                 snake.body.set(i, snake.lastTail.get(i - 1));
@@ -192,13 +177,10 @@ public class Game {
         graphics.frame.repaint();
     }
 
-    
-
     public static void main(String[] args) {
 
         Game game = new Game();
-        
-       
+
         game.initGame();
         game.run();
 
