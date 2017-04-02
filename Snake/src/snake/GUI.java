@@ -47,6 +47,7 @@ public class GUI extends JPanel {
         Font font = new Font("Dialog", Font.PLAIN,20);
         g2.setFont(font);
         g2.drawString("Score: "+String.valueOf(game.snake.score), 30, 30);
+         
         
         
         

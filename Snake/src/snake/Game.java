@@ -29,7 +29,7 @@ public class Game {
     double lastTime;  // Timer
     double timeNow;
     double dtime;
-    final double step = 1000 / 15;
+    final double step = 1000 / 12;
 
     public Game() {
         snake = new Snake(this);
@@ -49,7 +49,7 @@ public class Game {
         setFruit();
         snake.initSnake();
 
-        sounds.resetLost();
+        
 
         graphics.frame.setTitle("Snake v0.5" + "    " + "Score:" + snake.score + "    Made by Giorgi Shavoshvili");
         gameState = State.CANSTART;
@@ -143,11 +143,14 @@ public class Game {
             snake.score += snake.SCORE_UP;
             graphics.frame.setTitle("Snake v0.5" + "    " + "Score:" + snake.score + "    Made by Giorgi Shavoshvili");
             setFruit();
-        } else if (snake.checkLose()) {
-
+        } else if (snake.checkLose()>0) {
+             if (snake.checkLose() == 2){
+            sounds.restartBite();}
+            else {sounds.restartWallHit();}
             snake.body.set(0, snake.lastTail.get(0));
             System.out.println("lost");
-            sounds.lostSounds[loseRand.nextInt(8)].start();
+           
+            
             gameState = State.LOST;
             if (call) {
                 snake.dir = snake.lastDir;

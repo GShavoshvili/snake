@@ -57,12 +57,14 @@ public class Snake {
     List<Integer> body = new ArrayList<>();
     List<Integer> lastTail = new ArrayList<>();
 
-    boolean checkLose() {
-        return (lastTail.get(0) % 30 == 0 && lastTail.get(0) == body.get(0) + 1)
+    int checkLose() { // wall - 1, eat - 2, no - 0
+       if ((lastTail.get(0) % 30 == 0 && lastTail.get(0) == body.get(0) + 1)
                 || (lastTail.get(0) % 30 == 29 && lastTail.get(0) == body.get(0) - 1)
                 || (lastTail.get(0) / 30 == 0 && lastTail.get(0) == body.get(0) + 30)
-                || (lastTail.get(0) / 30 == 29 && lastTail.get(0) == body.get(0) - 30)
-                || (body.lastIndexOf(body.get(0)) > 0);
+                || (lastTail.get(0) / 30 == 29 && lastTail.get(0) == body.get(0) - 30)){return 1;}
+                else if (body.lastIndexOf(body.get(0)) > 0)
+                        {System.out.println("eat");return 2;}
+                return 0;
 
     }
 
